@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedKart — Online Pharmacy</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-light: #E1F5EE;
+    --green-mid: #5DCAA5;
+    --teal-text: #085041;
+    --coral: #D85A30;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --gray-bg: #F1EFE8;
+    --gray-mid: #888780;
+    --gray-text: #2C2C2A;
+    --white: #ffffff;
+    --border: #D3D1C7;
+    --font-sans: 'DM Sans', sans-serif;
+    --font-serif: 'DM Serif Display', serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-sans); color: var(--gray-text); background: #fff; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--green-dark);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-brand {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .nav-brand span { color: var(--green-mid); }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a {
+    color: rgba(255,255,255,0.8); text-decoration: none;
+    font-size: 0.9rem; font-weight: 500; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: #fff; }
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+  .cart-btn {
+    background: var(--green-mid);
+    border: none; color: #fff; cursor: pointer;
+    padding: 0.45rem 1rem; border-radius: 20px;
+    font-size: 0.85rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.2s;
+  }
+  .cart-btn:hover { background: #9FE1CB; }
+  #cart-count {
+    background: #fff; color: var(--green-dark);
+    border-radius: 50%; width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--green-dark) 0%, var(--green) 60%, var(--green-mid) 100%);
+    padding: 5rem 2rem;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; flex-direction: column; gap: 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -80px; left: -80px;
+    width: 350px; height: 350px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 50%;
+  }
+  .hero-badge {
+    background: rgba(255,255,255,0.15);
+    color: #fff; border: 1px solid rgba(255,255,255,0.3);
+    font-size: 0.8rem; padding: 4px 14px; border-radius: 20px;
+    font-weight: 500; letter-spacing: 0.5px;
+  }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    color: #fff; line-height: 1.1;
+    max-width: 600px;
+  }
+  .hero h1 em { color: var(--green-mid); font-style: italic; }
+  .hero p {
+    color: rgba(255,255,255,0.8); font-size: 1rem;
+    max-width: 500px; line-height: 1.7;
+  }
+  .hero-discount {
+    background: var(--amber-light); color: var(--amber);
+    font-weight: 600; font-size: 1rem;
+    padding: 10px 24px; border-radius: 30px;
+    border: 2px dashed var(--amber);
+  }
+  .hero-search {
+    display: flex; gap: 8px;
+    width: 100%; max-width: 500px;
+  }
+  .hero-search input {
+    flex: 1; padding: 0.75rem 1.25rem;
+    border: none; border-radius: 8px;
+    font-size: 0.9rem; font-family: var(--font-sans);
+    outline: none;
+  }
+  .hero-search button {
+    background: var(--coral); color: #fff;
+    border: none; padding: 0.75rem 1.5rem;
+    border-radius: 8px; font-weight: 600;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .hero-search button:hover { background: #993C1D; }
+
+  /* STATS */
+  .stats-bar {
+    background: var(--green-light);
+    padding: 1.5rem 2rem;
+    display: flex; justify-content: center; gap: 4rem; flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--green-dark); }
+  .stat-label { font-size: 0.8rem; color: var(--gray-mid); margin-top: 2px; }
+
+  /* CATEGORIES */
+  .section { padding: 3rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: 1.8rem; margin-bottom: 0.3rem;
+    color: var(--gray-text);
+  }
+  .section-sub { color: var(--gray-mid); font-size: 0.9rem; margin-bottom: 2rem; }
+  .categories {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .cat-card {
+    background: var(--gray-bg);
+    border-radius: 12px; padding: 1.25rem 1rem;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; border: 2px solid transparent;
+    text-decoration: none; color: inherit;
+  }
+  .cat-card:hover, .cat-card.active {
+    background: var(--green-light);
+    border-color: var(--green-mid);
+  }
+  .cat-icon { font-size: 2rem; margin-bottom: 6px; }
+  .cat-name { font-size: 0.85rem; font-weight: 600; color: var(--teal-text); }
+  .cat-count { font-size: 0.75rem; color: var(--gray-mid); }
+
+  /* PRODUCTS */
+  .products-section { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  .products-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-btn {
+    background: var(--gray-bg); border: none;
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    color: var(--gray-text);
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--green);
+    color: #fff;
+  }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  .product-card {
+    background: #fff; border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden; transition: all 0.25s;
+    position: relative;
+  }
+  .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+  .product-badge {
+    position: absolute; top: 10px; left: 10px;
+    background: var(--coral); color: #fff;
+    font-size: 0.7rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+  }
+  .product-badge.rx { background: var(--green-dark); }
+  .product-img {
+    background: var(--green-light);
+    height: 160px; display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem;
+  }
+  .product-info { padding: 1rem; }
+  .product-name { font-weight: 600; font-size: 0.9rem; line-height: 1.3; margin-bottom: 4px; }
+  .product-mfg { font-size: 0.75rem; color: var(--gray-mid); margin-bottom: 8px; }
+  .product-desc { font-size: 0.75rem; color: #5F5E5A; line-height: 1.5; margin-bottom: 10px; min-height: 36px; }
+  .product-bottom { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 1.1rem; font-weight: 700; color: var(--green-dark); }
+  .product-price s { font-size: 0.8rem; color: var(--gray-mid); font-weight: 400; margin-right: 4px; }
+  .add-btn {
+    background: var(--green); color: #fff;
+    border: none; padding: 7px 14px;
+    border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .add-btn:hover { background: var(--green-dark); }
+  .add-btn.added { background: var(--green-dark); }
+  .stock-low { font-size: 0.7rem; color: var(--coral); font-weight: 500; margin-top: 4px; }
+
+  /* FEATURES STRIP */
+  .features {
+    background: var(--green-dark); color: #fff;
+    padding: 2.5rem 2rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem; text-align: center;
+  }
+  .feature-icon { font-size: 2rem; margin-bottom: 8px; }
+  .feature-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+  .feature-desc { font-size: 0.82rem; opacity: 0.75; line-height: 1.5; }
+
+  /* CART MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 200;
+    align-items: flex-start; justify-content: flex-end;
+  }
+  .modal-overlay.open { display: flex; }
+  .cart-panel {
+    background: #fff; width: 420px; max-width: 100vw;
+    height: 100vh; overflow-y: auto;
+    display: flex; flex-direction: column;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  .cart-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    position: sticky; top: 0; background: #fff; z-index: 1;
+  }
+  .cart-header h2 { font-family: var(--font-serif); font-size: 1.4rem; }
+  .close-btn {
+    background: var(--gray-bg); border: none;
+    width: 34px; height: 34px; border-radius: 50%;
+    font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .cart-items { flex: 1; padding: 1rem 1.5rem; }
+  .cart-empty { text-align: center; padding: 3rem 0; color: var(--gray-mid); }
+  .cart-empty .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .cart-item {
+    display: flex; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .ci-icon {
+    width: 52px; height: 52px; border-radius: 10px;
+    background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .ci-info { flex: 1; }
+  .ci-name { font-weight: 600; font-size: 0.88rem; }
+  .ci-mfg { font-size: 0.75rem; color: var(--gray-mid); }
+  .ci-controls {
+    display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  }
+  .qty-btn {
+    width: 26px; height: 26px; border-radius: 6px;
+    background: var(--gray-bg); border: none;
+    font-size: 1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .qty-val { font-weight: 600; font-size: 0.9rem; min-width: 20px; text-align: center; }
+  .ci-price { font-weight: 700; color: var(--green-dark); font-size: 0.9rem; }
+  .remove-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--coral); font-size: 0.75rem; font-weight: 500; padding: 0;
+  }
+  .cart-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    background: #fff;
+  }
+  .cart-subtotal {
+    display: flex; justify-content: space-between;
+    font-size: 0.9rem; margin-bottom: 8px; color: var(--gray-mid);
+  }
+  .cart-total {
+    display: flex; justify-content: space-between;
+    font-size: 1.1rem; font-weight: 700; margin-bottom: 16px;
+    color: var(--green-dark);
+  }
+  .cart-discount-note {
+    font-size: 0.78rem; color: var(--coral); font-weight: 500;
+    margin-bottom: 12px; text-align: center;
+  }
+  .checkout-btn {
+    width: 100%; background: var(--green-dark); color: #fff;
+    border: none; padding: 1rem; border-radius: 10px;
+    font-size: 1rem; font-weight: 600; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .checkout-btn:hover { background: var(--green); }
+  .continue-btn {
+    width: 100%; background: none; border: 1.5px solid var(--border);
+    padding: 0.75rem; border-radius: 10px; margin-top: 8px;
+    font-size: 0.9rem; font-weight: 500; cursor: pointer;
+    color: var(--gray-text); transition: border-color 0.2s;
+  }
+  .continue-btn:hover { border-color: var(--green); color: var(--green-dark); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 2rem; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--green-dark); color: #fff;
+    padding: 12px 24px; border-radius: 30px;
+    font-size: 0.9rem; font-weight: 500;
+    z-index: 300; transition: transform 0.3s;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* FOOTER */
+  footer {
+    background: #2C2C2A; color: rgba(255,255,255,0.7);
+    padding: 2rem; text-align: center;
+    font-size: 0.8rem; line-height: 1.8;
+  }
+  footer strong { color: #fff; }
+
+  /* NO RESULTS */
+  .no-results { text-align: center; padding: 3rem; color: var(--gray-mid); grid-column: 1/-1; }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 1rem; }
+    .nav-links { display: none; }
+    .hero { padding: 3rem 1rem; }
+    .stats-bar { gap: 2rem; }
+    .cart-panel { width: 100vw; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-brand">Med<span>Kart</span></div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="scrollToProducts()">Store</a></li>
+    <li><a href="#features">Delivery</a></li>
+    <li><a href="#about">About Us</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 Cart <span id="cart-count">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🏥 Trusted Online Pharmacy · Nagpur</div>
+  <h1>Your Medicines, <em>Delivered</em> to Your Door</h1>
+  <p>Browse thousands of medicines, healthcare products, and wellness essentials — with secure payments and fast delivery.</p>
+  <div class="hero-discount">🎉 15% Off on Every ₹1000+ Order</div>
+  <div class="hero-search">
+    <input type="text" id="search-input" placeholder="Search medicines, brands, health products…" oninput="handleSearch(this.value)">
+    <button onclick="handleSearch(document.getElementById('search-input').value)">Search</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat"><div class="stat-num">5,000+</div><div class="stat-label">Medicines</div></div>
+  <div class="stat"><div class="stat-num">2hr</div><div class="stat-label">Express Delivery</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Genuine Products</div></div>
+  <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">Customer Support</div></div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="section">
+  <h2 class="section-title">Shop by Category</h2>
+  <p class="section-sub">Find exactly what you need</p>
+  <div class="categories" id="categories">
+    <a class="cat-card active" onclick="filterCategory('all', this)">
+      <div class="cat-icon">💊</div>
+      <div class="cat-name">All Medicines</div>
+      <div class="cat-count">28 products</div>
+    </a>
+    <a class="cat-card" onclick="filterCategory('pain', this)">
+      <div class="cat-icon">🩹</div>
+      <div class="cat-name">Pain Relief</div>
+      <div class="cat-count">6 products</div>
+    </a>
+    <a class="cat-card" onclick="filterCategory('vitamins', this)">
+      <div class="cat-icon">💪</div>
+      <div class="cat-name">Vitamins & Supplements</div>
+      <div class="cat-count">5 products</div>
+    </a>
+    <a class="cat-card" onclick="filterCategory('diabetes', this)">
+      <div class="cat-icon">🩸</div>
+      <div class="cat-name">Diabetes Care</div>
+      <div class="cat-count">4 products</div>
+    </a>
+    <a class="cat-card" onclick="filterCategory('skin', this)">
+      <div class="cat-icon">🧴</div>
+      <div class="cat-name">Skin Care</div>
+      <div class="cat-count">4 products</div>
+    </a>
+    <a class="cat-card" onclick="filterCategory('cold', this)">
+      <div class="cat-icon">🤧</div>
+      <div class="cat-name">Cold & Flu</div>
+      <div class="cat-count">5 products</div>
+    </a>
+    <a class="cat-card" onclick="filterCategory('digestive', this)">
+      <div class="cat-icon">🫃</div>
+      <div class="cat-name">Digestive Health</div>
+      <div class="cat-count">4 products</div>
+    </a>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="products-section" id="products-section">
+  <div class="products-header">
+    <div>
+      <h2 class="section-title">Our Medicines</h2>
+      <p class="section-sub" id="products-count">Showing all products</p>
+    </div>
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="sortProducts('default', this)">Default</button>
+      <button class="filter-btn" onclick="sortProducts('price-low', this)">Price ↑</button>
+      <button class="filter-btn" onclick="sortProducts('price-high', this)">Price ↓</button>
+      <button class="filter-btn" onclick="sortProducts('discount', this)">Best Deals</button>
+    </div>
+  </div>
+  <div class="products-grid" id="products-grid"></div>
+</div>
+
+<!-- FEATURES -->
+<div class="features" id="features">
+  <div>
+    <div class="feature-icon">🚚</div>
+    <div class="feature-title">Express Delivery</div>
+    <div class="feature-desc">Same-day delivery in Nagpur. Express 2-hour delivery available on select items.</div>
+  </div>
+  <div>
+    <div class="feature-icon">🔒</div>
+    <div class="feature-title">Secure Payments</div>
+    <div class="feature-desc">256-bit SSL encryption. UPI, cards, net banking, and wallets accepted.</div>
+  </div>
+  <div>
+    <div class="feature-icon">✅</div>
+    <div class="feature-title">100% Genuine</div>
+    <div class="feature-desc">All medicines sourced directly from licensed distributors. Batch verified.</div>
+  </div>
+  <div>
+    <div class="feature-icon">💬</div>
+    <div class="feature-title">24/7 Support</div>
+    <div class="feature-desc">Pharmacist-assisted support available round the clock via chat or call.</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="section" id="about" style="background: var(--green-light); max-width: 100%; padding: 3rem 2rem;">
+  <div style="max-width: 700px; margin: 0 auto; text-align: center;">
+    <h2 class="section-title">About MedKart</h2>
+    <p style="color: #5F5E5A; line-height: 1.8; margin-top: 1rem;">
+      MedKart is a student-developed medicine e-commerce platform built at <strong>Vidarbha Institute of Technology, Nagpur</strong> under the guidance of <strong>Prof. Aditya Patil</strong>. Our goal is to make essential medicines accessible to everyone — especially individuals in remote areas or with limited mobility — through a convenient, secure online experience.
+    </p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer id="contact">
+  <strong>MedKart — Online Pharmacy</strong><br>
+  Vidarbha Institute of Technology, Uti, Umrer Road, Nagpur – 441209<br>
+  📞 1800-XXX-XXXX &nbsp;|&nbsp; ✉ support@medkart.in &nbsp;|&nbsp; Mon–Sat 9am–9pm<br><br>
+  <span style="font-size: 0.75rem; opacity: 0.5;">© 2025 MedKart. For educational purposes. Not a licensed pharmacy.</span>
+</footer>
+
+<!-- CART PANEL -->
+<div class="modal-overlay" id="cart-overlay" onclick="closeCartOnOverlay(event)">
+  <div class="cart-panel">
+    <div class="cart-header">
+      <h2>Your Cart</h2>
+      <button class="close-btn" onclick="toggleCart()">✕</button>
+    </div>
+    <div class="cart-items" id="cart-items-container"></div>
+    <div class="cart-footer" id="cart-footer" style="display:none">
+      <div class="cart-subtotal"><span>Subtotal</span><span id="cart-subtotal">₹0</span></div>
+      <div class="cart-subtotal"><span>Delivery</span><span style="color: var(--green-dark)">FREE</span></div>
+      <div id="discount-note" class="cart-discount-note" style="display:none">🎉 15% discount applied!</div>
+      <div class="cart-total"><span>Total</span><span id="cart-total">₹0</span></div>
+      <button class="checkout-btn" onclick="checkout()">Proceed to Checkout →</button>
+      <button class="continue-btn" onclick="toggleCart()">Continue Shopping</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const products = [
+  { id:1, name:"Dolo 650 (Paracetamol)", mfg:"Micro Labs", price:28.50, mrp:32, icon:"💊", cat:"pain", desc:"Fever & mild pain relief. 650mg, 15 tablets.", rx:false, stock:50 },
+  { id:2, name:"Aspirin 75mg (Ecosprin)", mfg:"USV Ltd", price:45, mrp:52, icon:"❤️", cat:"pain", desc:"Antiplatelet agent. 75mg, 30 tablets.", rx:false, stock:30 },
+  { id:3, name:"Crocin Pain Relief", mfg:"GSK", price:58, mrp:65, icon:"🩹", cat:"pain", desc:"Extra strength for tough headaches. 500mg.", rx:false, stock:5 },
+  { id:4, name:"Ibuprofen 400mg", mfg:"Cipla", price:38, mrp:45, icon:"💊", cat:"pain", desc:"Anti-inflammatory pain relief. 10 tablets.", rx:false, stock:25 },
+  { id:5, name:"Combiflam", mfg:"Sanofi", price:54, mrp:62, icon:"🔴", cat:"pain", desc:"Ibuprofen + Paracetamol combo. 20 tablets.", rx:false, stock:18 },
+  { id:6, name:"Zitawyn Tablet", mfg:"Sun Pharma", price:99.75, mrp:115, icon:"💙", cat:"pain", desc:"Joint & muscle pain. 10 tablets.", rx:true, stock:12 },
+  { id:7, name:"Vitamin D3 60000 IU", mfg:"Alkem", price:185, mrp:210, icon:"☀️", cat:"vitamins", desc:"Weekly vitamin D supplement. 4 sachets.", rx:false, stock:40 },
+  { id:8, name:"Cod Liver Oil 300mg", mfg:"Apollo Life", price:202.50, mrp:225, icon:"🐟", cat:"vitamins", desc:"Omega-3 fatty acids. 30 capsules.", rx:false, stock:20 },
+  { id:9, name:"Calcium + D3 Tablets", mfg:"Pfizer", price:120, mrp:145, icon:"🦴", cat:"vitamins", desc:"Bone health support. 30 tablets.", rx:false, stock:35 },
+  { id:10, name:"Multivitamin Complete", mfg:"Himalaya", price:165, mrp:190, icon:"💛", cat:"vitamins", desc:"Daily nutrition support. 30 tablets.", rx:false, stock:28 },
+  { id:11, name:"Zinc 50mg", mfg:"GNC", price:89, mrp:105, icon:"⚡", cat:"vitamins", desc:"Immune system support. 60 tablets.", rx:false, stock:45 },
+  { id:12, name:"Metformin 500mg", mfg:"Abbott", price:42, mrp:55, icon:"🩸", cat:"diabetes", desc:"Type 2 diabetes management. 30 tablets.", rx:true, stock:15 },
+  { id:13, name:"Glucon-D Orange 200ml", mfg:"Zydus", price:104.40, mrp:120, icon:"🍊", cat:"diabetes", desc:"Instant energy glucose drink.", rx:false, stock:60 },
+  { id:14, name:"Diabetic Test Strips", mfg:"Accu-Chek", price:380, mrp:420, icon:"📊", cat:"diabetes", desc:"Blood glucose test strips. 50 strips.", rx:false, stock:22 },
+  { id:15, name:"Glipizide 5mg", mfg:"USV", price:65, mrp:78, icon:"💊", cat:"diabetes", desc:"Blood sugar control. 30 tablets.", rx:true, stock:8 },
+  { id:16, name:"Cetaphil Moisturizer", mfg:"Galderma", price:312, mrp:350, icon:"🧴", cat:"skin", desc:"Gentle daily moisturizer. 250ml.", rx:false, stock:30 },
+  { id:17, name:"Clindamycin Gel 1%", mfg:"Cipla", price:95, mrp:115, icon:"✨", cat:"skin", desc:"Acne treatment gel. 20g.", rx:true, stock:16 },
+  { id:18, name:"Betadine Ointment", mfg:"Win-Medicare", price:68, mrp:80, icon:"🟤", cat:"skin", desc:"Antiseptic wound ointment. 20g.", rx:false, stock:35 },
+  { id:19, name:"Sunscreen SPF50+", mfg:"Lotus Herbals", price:225, mrp:260, icon:"🌞", cat:"skin", desc:"Broad spectrum sun protection. 50ml.", rx:false, stock:42 },
+  { id:20, name:"Cetirizine 10mg", mfg:"GSK", price:18, mrp:22, icon:"🤧", cat:"cold", desc:"Antihistamine for allergies. 10 tablets.", rx:false, stock:55 },
+  { id:21, name:"Sinarest (Cold Tablet)", mfg:"Centaur", price:35, mrp:42, icon:"🤒", cat:"cold", desc:"Cold & congestion relief. 10 tablets.", rx:false, stock:30 },
+  { id:22, name:"Betadine Gargle", mfg:"Win-Medicare", price:78, mrp:90, icon:"🫧", cat:"cold", desc:"Antiseptic throat gargle. 100ml.", rx:false, stock:20 },
+  { id:23, name:"Vicks Cough Syrup", mfg:"P&G", price:92, mrp:108, icon:"🍵", cat:"cold", desc:"Cough suppressant + expectorant. 100ml.", rx:false, stock:38 },
+  { id:24, name:"Azithromycin 500mg", mfg:"Pfizer", price:155, mrp:182, icon:"💊", cat:"cold", desc:"Antibiotic for respiratory infections. 3 tabs.", rx:true, stock:14 },
+  { id:25, name:"Ranitidine 150mg", mfg:"Cipla", price:32, mrp:38, icon:"🫃", cat:"digestive", desc:"Acid reflux & heartburn. 10 tablets.", rx:false, stock:45 },
+  { id:26, name:"ORS Sachet Mango", mfg:"Electral", price:28, mrp:35, icon:"💧", cat:"digestive", desc:"Oral rehydration salts. Pack of 5.", rx:false, stock:70 },
+  { id:27, name:"Omeprazole 20mg", mfg:"Sun Pharma", price:52, mrp:65, icon:"🟡", cat:"digestive", desc:"Proton pump inhibitor. 15 capsules.", rx:false, stock:28 },
+  { id:28, name:"Isabgol Husk 100g", mfg:"Dabur", price:88, mrp:100, icon:"🌿", cat:"digestive", desc:"Dietary fiber for digestion & constipation.", rx:false, stock:50 },
+];
+
+let cart = JSON.parse(localStorage.getItem('medkart_cart') || '[]');
+let currentFilter = 'all';
+let currentSort = 'default';
+let searchQuery = '';
+
+function saveCart() { localStorage.setItem('medkart_cart', JSON.stringify(cart)); }
+function updateCartCount() {
+  const count = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cart-count').textContent = count;
+}
+
+function renderProducts() {
+  let list = [...products];
+  if (currentFilter !== 'all') list = list.filter(p => p.cat === currentFilter);
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(p => p.name.toLowerCase().includes(q) || p.mfg.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q));
+  }
+  if (currentSort === 'price-low') list.sort((a, b) => a.price - b.price);
+  if (currentSort === 'price-high') list.sort((a, b) => b.price - a.price);
+  if (currentSort === 'discount') list.sort((a, b) => (b.mrp - b.price) - (a.mrp - a.price));
+
+  const grid = document.getElementById('products-grid');
+  document.getElementById('products-count').textContent = `Showing ${list.length} product${list.length !== 1 ? 's' : ''}`;
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="no-results">😔 No products found. Try a different search.</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(p => {
+    const inCart = cart.find(i => i.id === p.id);
+    const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+    return `
+    <div class="product-card" id="card-${p.id}">
+      ${discount > 0 ? `<div class="product-badge">${discount}% OFF</div>` : ''}
+      ${p.rx ? '<div class="product-badge rx" style="top:10px;left:auto;right:10px">Rx</div>' : ''}
+      <div class="product-img">${p.icon}</div>
+      <div class="product-info">
+        <div class="product-name">${p.name}</div>
+        <div class="product-mfg">${p.mfg}</div>
+        <div class="product-desc">${p.desc}</div>
+        ${p.stock <= 10 ? `<div class="stock-low">⚠ Only ${p.stock} left!</div>` : ''}
+        <div class="product-bottom">
+          <div class="product-price">
+            ${p.mrp > p.price ? `<s>₹${p.mrp}</s>` : ''}
+            ₹${p.price.toFixed(2)}
+          </div>
+          <button class="add-btn ${inCart ? 'added' : ''}" id="btn-${p.id}" onclick="addToCart(${p.id})">
+            ${inCart ? '✓ Added' : '+ Add'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addToCart(id) {
+  const prod = products.find(p => p.id === id);
+  const existing = cart.find(i => i.id === id);
+  if (existing) { existing.qty++; }
+  else { cart.push({ ...prod, qty: 1 }); }
+  saveCart(); updateCartCount(); renderCart();
+  const btn = document.getElementById('btn-' + id);
+  if (btn) { btn.textContent = '✓ Added'; btn.classList.add('added'); }
+  showToast(`${prod.name} added to cart`);
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  saveCart(); updateCartCount(); renderCart(); renderProducts();
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) { removeFromCart(id); return; }
+  saveCart(); updateCartCount(); renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-items-container');
+  const footer = document.getElementById('cart-footer');
+  if (!cart.length) {
+    container.innerHTML = `<div class="cart-empty"><div class="empty-icon">🛒</div><p>Your cart is empty</p><p style="font-size:0.8rem;margin-top:4px">Add medicines to get started</p></div>`;
+    footer.style.display = 'none';
+    return;
+  }
+  footer.style.display = 'block';
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="ci-icon">${item.icon}</div>
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-mfg">${item.mfg}</div>
+        <div class="ci-controls">
+          <button class="qty-btn" onclick="changeQty(${item.id}, -1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id}, 1)">+</button>
+          <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+        </div>
+      </div>
+      <div class="ci-price">₹${(item.price * item.qty).toFixed(2)}</div>
+    </div>
+  `).join('');
+
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const eligible = subtotal >= 1000;
+  const discount = eligible ? subtotal * 0.15 : 0;
+  const total = subtotal - discount;
+  document.getElementById('cart-subtotal').textContent = '₹' + subtotal.toFixed(2);
+  document.getElementById('cart-total').textContent = '₹' + total.toFixed(2);
+  const dnote = document.getElementById('discount-note');
+  dnote.style.display = eligible ? 'block' : 'none';
+}
+
+function toggleCart() {
+  const overlay = document.getElementById('cart-overlay');
+  overlay.classList.toggle('open');
+  renderCart();
+}
+
+function closeCartOnOverlay(e) {
+  if (e.target === document.getElementById('cart-overlay')) toggleCart();
+}
+
+function filterCategory(cat, el) {
+  currentFilter = cat;
+  document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderProducts();
+  scrollToProducts();
+}
+
+function sortProducts(type, btn) {
+  currentSort = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts();
+}
+
+function handleSearch(val) {
+  searchQuery = val;
+  renderProducts();
+  if (val) scrollToProducts();
+}
+
+function scrollToProducts() {
+  document.getElementById('products-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function checkout() {
+  if (!cart.length) return;
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const discount = subtotal >= 1000 ? subtotal * 0.15 : 0;
+  const total = (subtotal - discount).toFixed(2);
+  alert(`Order Summary\n\n${cart.map(i => `${i.name} x${i.qty} — ₹${(i.price*i.qty).toFixed(2)}`).join('\n')}\n\n${discount > 0 ? `Discount (15%): -₹${discount.toFixed(2)}\n` : ''}Total: ₹${total}\n\nThank you for choosing MedKart! 🎉\n(This is a demo — no real transaction processed)`);
+  cart = []; saveCart(); updateCartCount(); renderCart(); toggleCart(); renderProducts();
+}
+
+updateCartCount();
+renderProducts();
+</script>
+</body>
+</html>
